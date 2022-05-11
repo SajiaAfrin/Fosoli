@@ -1,0 +1,195 @@
+
+import 'package:flutter/material.dart';
+import 'package:fosoli/screens/favorite/favorite.dart';
+import 'package:fosoli/screens/video/video_screen.dart';
+import 'package:fosoli/widget/custom_button.dart';
+import 'package:share/share.dart';
+
+class DetailScreen extends StatelessWidget {
+  static const String path = "DetailScreen";
+  const DetailScreen({ Key? key }) : super(key: key);
+
+  shareData(items){
+    String data ="""
+
+${items["title"]}
+
+${items["ingredients"].toString()}
+
+${items["directions"].toString()}
+    
+    """;
+    Share.share("$data", subject: 'Look what I made!');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double size = MediaQuery.of(context).size.width;
+    final Map items = ModalRoute.of(context)!.settings.arguments as Map;
+    return  Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.green,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Details"),
+            SizedBox(height: 4,),
+            Text("Catagory: ${items["category"]}", style: TextStyle(
+              color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500
+            )),
+          ],
+        ),
+        actions: [
+          IconButton(
+            onPressed: (){
+              shareData(items["data"]);
+            }, 
+            icon: Icon(Icons.share)
+          )
+        ],
+      ),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 200,
+            color: Colors.orange,
+            child: Stack(
+              fit: StackFit.loose,
+              children: [
+                Image.asset(
+                  items["data"]['image'],
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+                Positioned(
+                  bottom: 0,
+                  child: Container(
+                    padding: EdgeInsets.only(left: 10),
+                    width: size,
+                    height: 56,
+                    color: Colors.black.withOpacity(0.50),
+                    child: Center(
+                      child: Text(items["data"]['title'], style: TextStyle(
+                        color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700
+                      ),),
+                    ),
+                  ),
+                )
+              ],
+            )
+          ),
+          Row(
+            children: [
+              CustomButton(
+                onTap: (){},
+                icon: Icons.check_outlined,
+                lebel: "Process",
+                color: Colors.green,
+              ),
+              CustomButton(
+                onTap: (){
+                  Navigator.pushNamed(context, FavoriteScreen.path, arguments: items["data"]);
+                },
+                icon: Icons.favorite,
+                lebel: "Favorite",
+                color: Colors.green[300],
+              ),
+              CustomButton(
+                onTap: (){
+                  Navigator.pushNamed(context, VideoScreen.path, arguments:  items["data"]);
+                },
+                icon: Icons.video_camera_back,
+                lebel: "Video",
+                color: Colors.green,
+              )
+              
+            ],
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "process",
+                       style: TextStyle(
+                          color: Colors.green, fontSize: 24, fontWeight: FontWeight.w700
+                      )
+                    ),
+                    Divider(
+                      thickness: 2,
+                      color: Colors.green,
+                    ),
+                    for(int i = 0; i < items["data"]['process'].length; i++)
+                    Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(4)
+                          ),
+                        ),
+                        SizedBox(width: 8,),
+                        Text(
+                          items["data"]['process'][i],
+                          style: TextStyle(
+                            color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500
+                          )
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16,),
+                    Text(
+                      "Directions",
+                       style: TextStyle(
+                          color: Colors.green, fontSize: 24, fontWeight: FontWeight.w700
+                      )
+                    ),
+                    Divider(
+                      thickness: 2,
+                      color: Colors.green,
+                    ),
+                    for(int i = 0; i < items["data"]['directions'].length; i++)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          margin: EdgeInsets.only(top: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(4)
+                          ),
+                        ),
+                        SizedBox(width: 8,),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              items["data"]['directions'][i],
+                              style: TextStyle(
+                                color: Colors.black, fontSize: 14, fontWeight: FontWeight.w500
+                              )
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
